@@ -1,6 +1,6 @@
 GDEssentials
 =================
-Addon to improve handling of events, actions, and memory management for the Godot Game Engine
+Addon to improve handling of events, actions, and memory management for the Godot Game Engine.
 
 Overview
 ----
@@ -16,7 +16,7 @@ Features
 
 4. An improved implementation of the Singleton Pattern.
 
-5. Various Extension Methods and Listeners
+5. Various Extension Methods and Listeners.
 
 Known Issues
 ----
