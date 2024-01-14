@@ -2,5 +2,6 @@
 .godot/
 GDEssentials.sln
 GDEssentials.csproj
+.vs/
 project.godot
 MainScene.tscn
