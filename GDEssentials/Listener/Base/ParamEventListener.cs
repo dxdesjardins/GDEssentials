@@ -6,10 +6,10 @@ namespace Lambchomp.Essentials;
 
 public abstract partial class ParamEventListener<T> : Node
 {
-	[Export] protected bool invokeOnEnable = false;
-	[Export] protected bool invokeOnDisable = false;
+    [Export] protected bool invokeOnEnable = false;
+    [Export] protected bool invokeOnDisable = false;
     protected virtual ParamEvent<T> EventObject { get; }
-	[Export] protected GameAction[] eventActions;
+    [Export] protected GameAction[] eventActions;
 
     public override void _EnterTree() {
         RequestReady();
@@ -22,17 +22,17 @@ public abstract partial class ParamEventListener<T> : Node
     }
 
     public override void _Ready() {
-		EventObject?.AddListener(this);
-		if (invokeOnEnable)
+        EventObject?.AddListener(this);
+        if (invokeOnEnable)
             ReDispatch();
-	}
+    }
 
-	public void ReDispatch() {
-		if (EventObject.IsInvoking)
+    public void ReDispatch() {
+        if (EventObject.IsInvoking)
             Dispatch(EventObject.InvokingParam);
         else if (EventObject.HasParameter)
-			Dispatch(EventObject.LastParameter);
-	}
+            Dispatch(EventObject.LastParameter);
+    }
 
     public virtual void Dispatch(T parameter) {
         eventActions?.InvokeGameActions<T>(parameter, this);

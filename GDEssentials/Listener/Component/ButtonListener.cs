@@ -6,17 +6,17 @@ namespace Lambchomp.Essentials;
 
 public partial class ButtonListener : Node
 {
-	[Export] private Button target;
-	[Export] private GameAction[] buttonDownActions;
-	[Export] private GameAction[] buttonUpActions;
-	[Export] private GameAction[] buttonPressedActions;
-	[Export] private GameAction[] buttonToggledActionsBool;
+    [Export] private Button target;
+    [Export] private GameAction[] buttonDownActions;
+    [Export] private GameAction[] buttonUpActions;
+    [Export] private GameAction[] buttonPressedActions;
+    [Export] private GameAction[] buttonToggledActionsBool;
 
     public override void _EnterTree() {
         RequestReady();
     }
 
-	public override void _ExitTree() {
+    public override void _ExitTree() {
         target.ButtonDown -= InvokeButtonDownActions;
         target.ButtonUp -= InvokeButtonUpActions;
         target.Pressed -= InvokeButtonPressedActions;
@@ -25,14 +25,14 @@ public partial class ButtonListener : Node
 
     public override void _Ready() {
         target ??= this.GetParent<Button>();
-		target.ButtonDown += InvokeButtonDownActions;
+        target.ButtonDown += InvokeButtonDownActions;
         target.ButtonUp += InvokeButtonUpActions;
         target.Pressed += InvokeButtonPressedActions;
         target.Toggled += InvokeButtonToggledActionsBool;
     }
 
-	public void InvokeButtonDownActions() {
-		buttonDownActions.InvokeGameActions(this);
+    public void InvokeButtonDownActions() {
+        buttonDownActions.InvokeGameActions(this);
     }
 
     public void InvokeButtonUpActions() {

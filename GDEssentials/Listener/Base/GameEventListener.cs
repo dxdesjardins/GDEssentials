@@ -6,10 +6,10 @@ namespace Lambchomp.Essentials;
 
 public partial class GameEventListener : Node
 {
-	[Export] protected bool invokeOnEnable = false;
-	[Export] protected bool invokeOnDisable = false;
+    [Export] protected bool invokeOnEnable = false;
+    [Export] protected bool invokeOnDisable = false;
     protected virtual StaticEvent EventObject { get; }
-	protected virtual GameAction[] EventActions { get; }
+    protected virtual GameAction[] EventActions { get; }
 
     public override void _EnterTree() {
         RequestReady();
