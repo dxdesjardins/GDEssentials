@@ -18,7 +18,7 @@ Features
 
 5. Various Extension Methods and Listeners.
 
-6. + Much More. This repository is developing quickly so documentation is currently lacking.
+6. And much more. This repository is developing quickly and documentation is currently lacking.
 
 Known Issues
 ----
