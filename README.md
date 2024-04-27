@@ -22,7 +22,7 @@ Features
 
 Known Issues
 ----
-This project currently suffers from an infamous engine bug. It has been fixed for the upcoming 4.3 release. I recommend first reading the issue report at:
+This project currently suffers from an infamous engine bug. It has been fixed for the upcoming 4.3 release; I am currently using an unofficial engine patch to mitigate. I recommend first reading the issue report at:
 https://github.com/godotengine/godot/issues/79519
 
 Licence
