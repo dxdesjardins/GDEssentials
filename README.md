@@ -12,7 +12,7 @@ Features
 
 2. A Resource Event System implementation.
 
-3. An Object Pooling System.
+3. An Object Pooling System. See me separate GDPool repository for documentation.
 
 4. An improved implementation of the Singleton Pattern.
 
@@ -20,7 +20,7 @@ Features
 
 Known Issues
 ----
-This project currently suffers from an infamous engine bug. I recommend first reading the issue report at:
+This project currently suffers from an infamous engine bug. It has been fixed for the upcoming 4.3 release. I recommend first reading the issue report at:
 https://github.com/godotengine/godot/issues/79519
 
 Licence
