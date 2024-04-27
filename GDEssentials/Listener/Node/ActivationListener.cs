@@ -4,20 +4,34 @@ using System.Collections.Generic;
 
 namespace Lambchomp.Essentials;
 
-public partial class ActivationListener : Node
-{
-    [Export] private GameAction[] activateActions;
-    [Export] private GameAction[] deactivateActions;
+public partial class ActivationListener : Node {
+    [Export] private GameAction[] enterTreeActions;
+    [Export] private GameAction[] enterTreeReadyActions;
+    [Export] private GameAction[] exitTreeActions;
+    [Export] private GameAction[] readyActions;
+    [Export] private GameAction[] invokeActions;
+    private bool readyTriggered = false;
 
     public override void _EnterTree() {
+        enterTreeActions.Invoke(this);
         RequestReady();
     }
 
     public override void _ExitTree() {
-        deactivateActions.InvokeGameActions(this);
+        exitTreeActions.Invoke(this);
     }
 
     public override void _Ready() {
-        activateActions.InvokeGameActions(this);
+        if (!readyTriggered) {
+            readyTriggered = true;
+            readyActions.Invoke(this);
+        }
+        enterTreeReadyActions.Invoke(this);
+        GD.Print("invoked");
+    }
+
+    public void Invoke() {
+        invokeActions.Invoke(this);
+        GD.Print("removed");
     }
 }

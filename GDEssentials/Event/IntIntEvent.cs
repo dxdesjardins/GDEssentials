@@ -6,6 +6,6 @@ namespace Lambchomp.Essentials;
 
 [GlobalClass]
 [Tool]
-public partial class Vector3Event : ParamEvent<Vector3>
+public partial class IntIntEvent : ParamEvent<(int, int)>
 {
 }

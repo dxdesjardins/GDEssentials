@@ -10,6 +10,6 @@ public partial class NodeEventListener : ParamEventListener<Node>
     protected override ParamEvent<Node> EventObject { get { return eventObject; } }
 
     public override void Dispatch(Node parameter) {
-        eventActions?.InvokeGameActions(parameter, this);
+        eventActions?.Invoke(parameter, this);
     }
 }

@@ -11,10 +11,10 @@ public partial class IntEventListener : ParamEventListener<bool> {
     [Export] private GameAction[] onFalse;
 
     public override void Dispatch(bool parameter) {
-        eventActions?.InvokeGameActions<bool>(parameter, this);
+        eventActions?.Invoke<bool>(parameter, this);
         if (parameter)
-            onTrue?.InvokeGameActions(this);
+            onTrue?.Invoke(this);
         else
-            onFalse?.InvokeGameActions(this);
+            onFalse?.Invoke(this);
     }
 }

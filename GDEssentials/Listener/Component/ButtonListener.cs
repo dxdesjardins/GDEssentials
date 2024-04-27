@@ -32,18 +32,18 @@ public partial class ButtonListener : Node
     }
 
     public void InvokeButtonDownActions() {
-        buttonDownActions.InvokeGameActions(this);
+        buttonDownActions.Invoke(this);
     }
 
     public void InvokeButtonUpActions() {
-        buttonUpActions.InvokeGameActions(this);
+        buttonUpActions.Invoke(this);
     }
 
     public void InvokeButtonPressedActions() {
-        buttonPressedActions.InvokeGameActions(this);
+        buttonPressedActions.Invoke(this);
     }
 
     public void InvokeButtonToggledActionsBool(bool state) {
-        buttonToggledActionsBool.InvokeGameActions<bool>(state, this);
+        buttonToggledActionsBool.Invoke<bool>(state, this);
     }
 }

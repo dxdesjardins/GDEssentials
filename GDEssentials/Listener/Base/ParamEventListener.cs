@@ -35,6 +35,6 @@ public abstract partial class ParamEventListener<T> : Node
     }
 
     public virtual void Dispatch(T parameter) {
-        eventActions?.InvokeGameActions<T>(parameter, this);
+        eventActions?.Invoke<T>(parameter, this);
     }
 }

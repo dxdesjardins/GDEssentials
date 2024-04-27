@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace Lambchomp.Essentials;
 
 [GlobalClass]
+[Tool]
 public partial class StaticEvent : GameEvent
 {
     private List<GameEventListener> eventListeners = new List<GameEventListener>();

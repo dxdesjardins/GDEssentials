@@ -10,6 +10,6 @@ public partial class StringEventListener : ParamEventListener<string>
     protected override ParamEvent<string> EventObject { get { return eventObject; } }
 
     public override void Dispatch(string parameter) {
-        eventActions?.InvokeGameActions(parameter, this);
+        eventActions?.Invoke(parameter, this);
     }
 }

@@ -10,7 +10,7 @@ public partial class SceneInstantiateListener : Node
 
     public override void _Notification(int what) {
         if (what == NotificationSceneInstantiated) {
-            instantiateActions.InvokeGameActions(this);
+            instantiateActions.Invoke(this);
         }
     }
 }

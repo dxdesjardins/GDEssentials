@@ -10,6 +10,6 @@ public partial class Vector2EventListener : ParamEventListener<Vector2>
     protected override ParamEvent<Vector2> EventObject { get { return eventObject; } }
 
     public override void Dispatch(Vector2 parameter) {
-        eventActions?.InvokeGameActions(parameter, this);
+        eventActions?.Invoke(parameter, this);
     }
 }

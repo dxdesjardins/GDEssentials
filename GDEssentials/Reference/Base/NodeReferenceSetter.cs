@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Lambchomp.Essentials;
 
+/// <summary> NodeReferenceSetter must be positioned after or below the object it is pointing to. </summary>
 public partial class NodeReferenceSetter : Node
 {
     [Export] private Node target;
@@ -12,10 +13,6 @@ public partial class NodeReferenceSetter : Node
     public NodeReference NodeReference => nodeReference;
 
     public override void _EnterTree() {
-        RequestReady();
-    }
-
-    public override void _Ready() {
         nodeReference.Instance = target ?? this.GetParent<Node>();
         nodeReference ??= new NodeReference();
     }

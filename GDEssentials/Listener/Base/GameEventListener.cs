@@ -29,6 +29,6 @@ public partial class GameEventListener : Node
     }
 
     public virtual void Dispatch() {
-        EventActions.InvokeGameActions(this);
+        EventActions.Invoke(this);
     }
 }

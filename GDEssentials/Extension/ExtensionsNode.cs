@@ -7,6 +7,11 @@ namespace Lambchomp.Essentials;
 
 public static class ExtensionsNode
 {
+    public static T GetComponentInTree<T>() {
+        Window root = (Engine.GetMainLoop() as SceneTree).Root;
+        return root.GetComponentInChildren<T>(false);
+    }
+
     public static T[] GetComponentsInChildren<T>(this Node node, bool isChild = true, bool includeParent = true) {
         return GetComponentsInChildren(node, isChild, includeParent).OfType<T>().ToArray();
     }
@@ -39,6 +44,17 @@ public static class ExtensionsNode
         return default;
     }
 
+    public static T GetComponentInParent<T>(this Node node) {
+        Node parent = node.GetParent();
+        T result;
+        do {
+            parent = parent.GetParent();
+            result = parent.GetComponent<T>(false, true);
+        }
+        while (result != null);
+        return result;
+    }
+
     public static T GetComponent<T>(this Node node, bool isChild = true, bool includeParent = true) {
         if (isChild)
             node = node.GetParent() ?? node;
@@ -51,16 +67,25 @@ public static class ExtensionsNode
         return default;
     }
 
+    public static Node GetScene(this Node node) {
+        if (node.Owner != null)
+            return node.Owner;
+        else
+            return node.GetParent();
+    }
+
     public static void SetActive(this Node node, bool state) {
-        node.ProcessMode = (state) ? Node.ProcessModeEnum.Inherit : Node.ProcessModeEnum.Disabled;
-        node.SetPhysicsProcess(state);
         if (node is CanvasItem canvasItem)
             canvasItem.Visible = state;
+        node.SetPhysicsProcess(state);
+        node.ProcessMode = (state) ? Node.ProcessModeEnum.Inherit : Node.ProcessModeEnum.Disabled;
     }
 
     public static Node InstantiateChild(this Node node, PackedScene packedScene, Vector2 position = default) {
         Node newScene = packedScene.Instantiate<Node>();
-        return node.InstantiateChild(newScene, position);
+        Node instance = node.InstantiateChild(newScene, position);
+        instance.Name = System.IO.Path.GetFileNameWithoutExtension(packedScene.ResourcePath);
+        return instance;
     }
 
     public static Node InstantiateChild(this Node node, Node preloadedNode, Vector2 position = default) {
@@ -72,10 +97,14 @@ public static class ExtensionsNode
         return preloadedNode;
     }
 
-    /// <summary>
-    /// Returns the Node that has the top rendered deep Sprite2D and at least one shallow child inheriting T.
-    /// </summary>
-    public static Node GetTopRenderedNode<T>(this Node[] nodes, bool areChildren = true) {
+	public static T InstantiateChild<T>(this Node node, Vector2 position = default) where T : Node {
+		Node instance = (Node)Activator.CreateInstance(typeof(T));
+		instance.Name = typeof(T).Name;
+        return node.InstantiateChild(instance, position) as T;
+	}
+
+	/// <summary> Returns the Node that has the top rendered deep Sprite2D and at least one shallow child inheriting T. </summary>
+	public static Node GetTopRenderedNode<T>(this Node[] nodes, bool areChildren = true) {
         List<Node> tNodes = new List<Node>();
         foreach (Node node in nodes)
             if (node.GetComponent<T>(areChildren) != null)
@@ -127,15 +156,34 @@ public static class ExtensionsNode
         return z_index;
     }
 
-    public static bool IsInGroup<[MustBeVariant] TEnum>(this Node node, Godot.Collections.Array<TEnum> allowedGroups) {
+    public static bool IsInGroup<[MustBeVariant] TEnum>(this Node node, Godot.Collections.Array<TEnum> groups) {
         var nodeGroups = node.GetGroups();
-        for (int i = 0; i < allowedGroups.Count; i++) {
+        for (int i = 0; i < groups.Count; i++) {
             for (int j = 0; j < nodeGroups.Count; j++) {
-                if (allowedGroups[i].ToString() == nodeGroups[j].ToString())
+                if (groups[i].ToString() == nodeGroups[j].ToString())
                     return true;
             }
         }
         return false;
+    }
+
+    public static bool IsInGroup(this Node node, string[] groups) {
+        for (int i = 0; i < groups.Length; i++) {
+            if (node.IsInGroup(groups[i]))
+                return true;
+        }
+        return false;
+    }
+
+    public static Node[] GetNodesInGroup(this Node[] nodes, string group) => GetNodesInGroup<Node>(nodes, group);
+
+    public static T[] GetNodesInGroup<T>(this T[] nodes, string group) where T : Node {
+        List<T> groupNodes = new();
+        foreach (T node in nodes) {
+            if (node.IsInGroup(group))
+                groupNodes.Add(node);
+        }
+        return groupNodes.ToArray();
     }
 
     public static int GetTreeDepth(this Node node) {
@@ -167,5 +215,47 @@ public static class ExtensionsNode
         for (int i = 0; i < generations; i++)
             node = node.GetParent();
         return node;
+    }
+
+    public static void RemoveParent(this Node node) {
+        node.GetParent().GetParent()?.RemoveChild(node.GetParent());
+    }
+
+    public static void Remove(this Node node) {
+        node.GetParent()?.RemoveChild(node);
+    }
+
+    public static void SafeRemoveParent(this Node node) {
+        Node parent = node.GetParent();
+        Node grandParent = parent.GetParent();
+        if (grandParent.IsNodeReady())
+            grandParent.RemoveChild(parent);
+        else
+            grandParent.CallDeferred(Node.MethodName.RemoveChild, parent);
+    }
+
+    public static Node2D LookAt(this Node2D node, Vector2 target) {
+        node.Rotation = node.GlobalPosition.AngleToPoint(target);
+        return node;
+    }
+
+    public static bool IsPartOfStage(this Node node) {
+        do {
+            node = node.GetParent();
+            if (node is Stage)
+                return true;
+        }
+        while (node != null);
+        return false;
+    }
+
+    public static Node GetStage(this Node node) {
+        do {
+            node = node.GetParent();
+            if (node is Stage)
+                return node;
+        }
+        while (node != null);
+        return null;
     }
 }

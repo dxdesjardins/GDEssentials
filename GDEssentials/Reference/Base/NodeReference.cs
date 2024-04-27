@@ -1,26 +1,35 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace Lambchomp.Essentials;
 
 [GlobalClass]
+[Tool]
 public partial class NodeReference : Resource
 {
-    private Node instantiateReference;
-    private System.Action<Node> dispatchEvent = delegate { };
-    private Node instance;
+    [Export] protected PackedScene packedScene;
+    protected System.Action<Node> dispatchEvent;
+    protected Node instance;
 
     public Node Instance {
         get {
-            if (instance == null && instantiateReference != null)
-                instance = instantiateReference;
+            if (instance == null && packedScene != null)
+                instance = packedScene.Instantiate();
+            else if (instance == null && packedScene == null && !Engine.IsEditorHint()) {
+                StackTrace stackTrace = new StackTrace();
+                StackFrame callerFrame = stackTrace.GetFrame(2);
+                MethodBase callerMethod = callerFrame.GetMethod();
+                GD.Print("NodeReference " + this.ResourceName + "from " + callerMethod.DeclaringType.Name + " has no Instance or PackedScene");
+            }
             return instance;
         }
         set {
             instance = value;
             if (instance != null) {
-                if (dispatchEvent != null) 
+                if (dispatchEvent != null)
                     dispatchEvent.Invoke(instance);
             }
             else {
@@ -29,12 +38,6 @@ public partial class NodeReference : Resource
                         dispatchEvent -= (System.Action<Node>)d;
             }
         }
-    }
-
-    public T GetInstance<T>() {
-        if (instance is T _instance)
-            return _instance;
-        return default;
     }
 
     public void AddListener(System.Action<Node> listener) {

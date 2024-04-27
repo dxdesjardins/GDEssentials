@@ -32,8 +32,7 @@ public static class ExtensionsRaycast
                 exclude.Add((Rid)result["rid"]);
                 query.Exclude = exclude;
             }
-        }
-        while (result.Count > 0);
+        } while (result.Count > 0);
         return default;
     }
 
@@ -63,8 +62,7 @@ public static class ExtensionsRaycast
                 exclude.Add((Rid)result["rid"]);
                 query.Exclude = exclude;
             }
-        }
-        while (result.Count > 0);
+        } while (result.Count > 0);
         return objects.ToArray();
     }
 

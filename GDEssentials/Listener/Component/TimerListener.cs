@@ -14,15 +14,15 @@ public partial class TimerListener : Node
     }
 
     public override void _ExitTree() {
-        target.Timeout -= TimeoutActions;
+        target.Timeout -= InvokeTimeoutActions;
     }
 
     public override void _Ready() {
         target ??= this.GetParent<Timer>();
-        target.Timeout += TimeoutActions;
+        target.Timeout += InvokeTimeoutActions;
     }
 
-    public void TimeoutActions() {
-        timeoutAtions.InvokeGameActions(this);
+    public void InvokeTimeoutActions() {
+        timeoutAtions.Invoke(this);
     }
 }
