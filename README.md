@@ -18,6 +18,8 @@ Features
 
 5. Various Extension Methods and Listeners.
 
+6. Many more things. This repository is developing quickly so documentation is currently lacking.
+
 Known Issues
 ----
 This project currently suffers from an infamous engine bug. It has been fixed for the upcoming 4.3 release. I recommend first reading the issue report at:
