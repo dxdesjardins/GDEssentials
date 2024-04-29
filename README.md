@@ -1,28 +1,22 @@
 GDEssentials
 =================
-Addon to improve handling of events, actions, and memory management for the Godot Game Engine.
-
-Overview
-----
-The original purpose of this project was to design a system to replace the use of Godot Signals in the Editor Interface. Signals seem to suffer from scalability and performance issues partially due to their high reliance on string references. In the end, this addon has become a collection of tools that I import to all Godot Projects.
+A Collection of tools, systems and extension methods for the Godot Game Engine. Many features attempt to reimplement functionality and popular repositories from Unity into Godot. The original purpose of this project was to design a system to replace the use of Godot Signals in the Editor Interface.
 
 Features
 ----
-1. A GameEvent & GameAction System designed to completely replace the need to use Signal Connections through the Editor Interface.
+1. A collection of extension methods implementing functionality inspired by Unity.
 
-2. A Resource Event System implementation.
+2. Generic singleton class implementations for Nodes and Resources.
 
-3. An Object Pooling System. See me separate GDPool repository for documentation.
+3. An object pooling system. See the GDPool repository for documentation.
 
-4. An improved implementation of the Singleton Pattern.
+4. A StageManager class implementing functionality of Unity's SceneManager. I define a stage as a highest level scene, such as a GameLevel or PersistentScene.
 
-5. Various Extension Methods and Listeners.
-
-6. And much more. This repository is developing quickly and documentation is currently lacking.
+5. A system for handling of GameEvents, GameActions, References and Variables notably allowing them to be used as Resources that can be dragged into subscribing Nodes. Various listener scripts working with the system are included. The system is designed to replace the need to use signal connections through the editor interface and eliminate reliance on breakable string references.
 
 Known Issues
 ----
-This project currently suffers from an infamous engine bug. It has been fixed for the upcoming 4.3 release; I am currently using an unofficial engine patch to mitigate. I recommend first reading the issue report at:
+This project may experience crashes due to engine bugs related to C# generic class compilation. It has been fixed for the upcoming 4.3 release; I am currently using an unofficial engine patch to mitigate. I recommend first reading the issue report at:
 https://github.com/godotengine/godot/issues/79519
 
 Licence
