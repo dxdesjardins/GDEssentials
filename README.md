@@ -1,6 +1,6 @@
 GDEssentials
 =================
-A Collection of tools, systems and extension methods for the Godot Game Engine. Many features attempt to reimplement functionality and popular repositories from Unity to Godot. The original purpose of this project was to design a system to replace the use of Godot Signals in the Editor Interface.
+A Collection of tools and extension methods for the Godot Game Engine. Many features attempt to reimplement functionality and popular repositories from Unity to Godot. The original purpose of this project was to design a system to replace the use of Godot Signals in the Editor Interface.
 
 Features
 ----
