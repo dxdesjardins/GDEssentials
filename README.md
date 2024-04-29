@@ -16,7 +16,7 @@ Features
 
 Known Issues
 ----
-This project may experience crashes due to and engine bug related to C# generic class compilation. It should fixed for the upcoming 4.3 release; I am currently using an unofficial engine patch to mitigate. Reference the issue report at:
+This project may experience crashes due to an engine bug related to C# generic class compilation. It should fixed for the upcoming 4.3 release; I am currently using an unofficial engine patch to mitigate. Reference the issue report at:
 https://github.com/godotengine/godot/issues/79519
 
 Licence
