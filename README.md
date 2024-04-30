@@ -1,6 +1,6 @@
 GDEssentials
 =================
-A collection of tools and extension methods for the Godot Game Engine. Many features attempt to reimplement functionality and popular repositories from Unity to Godot. The original purpose of this project was to design a system to replace the use of Godot Signals in the Editor Interface.
+A collection of tools and extension methods for the Godot Game Engine. Many features attempt to reimplement functionality and popular repositories from Unity to Godot. This project's event system is designed to replace the need to use signal connections through the editor interface and eliminate reliance on breakable string references.
 
 Features
 ----
@@ -12,7 +12,7 @@ Features
 
 4. A StageManager class implementing functionality of Unity's SceneManager. I define a stage as a highest level scene, such as a GameLevel or PersistentScene.
 
-5. A system for handling of GameEvents, GameActions, References and Variables notably allowing them to be used as Resources that can be dragged into subscribing Nodes. Various listener scripts working with the system are included. The system is designed to replace the need to use signal connections through the editor interface and eliminate reliance on breakable string references.
+5. A system for handling of GameEvents, GameActions, References and Variables notably allowing them to be used as Resources that can be dragged into subscribing Nodes. Various listener scripts working with the system are included.
 
 Known Issues
 ----
