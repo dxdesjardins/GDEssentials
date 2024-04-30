@@ -12,7 +12,7 @@ Features
 
 4. A StageManager class implementing functionality of Unity's SceneManager. I define a stage as a highest level scene, such as a GameLevel or PersistentScene.
 
-5. A system for handling of GameEvents, GameActions, References and Variables notably allowing them to be used as Resources that can be dragged into subscribing Nodes. Various listener scripts working with the system are included.
+5. A system for handling of GameEvents, GameActions, References and Variables notably allowing them to be created as Resources that can be dragged into subscribing Nodes. Various listener scripts working with this system are included.
 
 Known Issues
 ----
