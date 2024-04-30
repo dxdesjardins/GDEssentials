@@ -4,7 +4,7 @@ A collection of tools and extension methods for the Godot Game Engine. Many feat
 
 Features
 ----
-1. A collection of extension methods implementing functionality inspired by Unity.
+1. A system for handling of GameEvents, GameActions, References and Variables notably allowing them to be created as Resources that can be dragged into subscribing Nodes. Various listener scripts working with this system are included.
 
 2. Generic singleton class implementations for Nodes and Resources.
 
@@ -12,7 +12,7 @@ Features
 
 4. A StageManager class implementing functionality of Unity's SceneManager. I define a stage as a highest level scene, such as a GameLevel or PersistentScene.
 
-5. A system for handling of GameEvents, GameActions, References and Variables notably allowing them to be created as Resources that can be dragged into subscribing Nodes. Various listener scripts working with this system are included.
+5. A collection of extension methods implementing functionality inspired by Unity.
 
 Known Issues
 ----
