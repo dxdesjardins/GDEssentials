@@ -1,6 +1,6 @@
 GDEssentials
 =================
-A collection of tools and extension methods for the Godot Game Engine. Many features attempt to reimplement functionality and popular repositories from Unity to Godot. This project's event system is designed to replace the need to use signal connections through the editor interface, eliminating reliance on breakable string references.
+Custom event system and collection of tools for the Godot Game Engine. Many features attempt to reimplement functionality and popular repositories from Unity to Godot. This project's event system is designed to replace the need to use signal connections through the editor interface, eliminating reliance on breakable string references.
 
 Features
 ----
