@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 [GlobalClass]
 [Tool]
@@ -19,6 +19,7 @@ public partial class PlayAnimationAction : ParamAction<string>
             tar = node.GetNode<AnimationPlayer>(animationPlayer);
         else
             tar = node.GetParent<AnimationPlayer>();
+        tar.Stop();
         if (randomPlayBackwards && new Random().NextDouble() < 0.5)
             tar.Play(param, default, -customSpeed, true);
         else

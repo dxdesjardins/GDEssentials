@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public class ObjectPoolContainer<T> where T : class
 {

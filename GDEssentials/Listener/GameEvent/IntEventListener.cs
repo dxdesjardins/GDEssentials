@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public partial class IntEventListener : ParamEventListener<bool> {
     [Export] private BoolEvent eventObject;

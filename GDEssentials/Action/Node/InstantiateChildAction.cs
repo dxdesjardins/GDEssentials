@@ -2,25 +2,17 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 [GlobalClass]
 public partial class InstantiateChildAction : ParamAction<Node>
 {
-    [Export] bool preloadOnlyFirstCall = false;
+    [Export] bool useObjectPooling = true;
     [Export] NodeReference nodeReference;
     [Export] NodePath nodePath;
     [Export] PackedScene packedScene;
-    private Node preloadedNode;
 
     public override bool Invoke(Node node) {
-        if (!IsInstanceValid(preloadedNode) || preloadedNode.IsQueuedForDeletion() || preloadedNode == null) {
-            preloadedNode = packedScene.Instantiate<Node>();
-            if (preloadOnlyFirstCall)
-                return true;
-        }
-        if (preloadedNode.IsInsideTree())
-            return true;
         Node tar;
         if (nodeReference != null)
             tar = nodeReference.Instance;
@@ -28,7 +20,10 @@ public partial class InstantiateChildAction : ParamAction<Node>
             tar = node.GetNode(nodePath);
         else
             tar = node;
-        tar.InstantiateChild(preloadedNode);
+        if (useObjectPooling)
+            PoolManager.Spawn(packedScene, tar);
+        else
+            tar.InstantiateChild(packedScene);
         return true;
     }
 

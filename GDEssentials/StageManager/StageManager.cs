@@ -1,42 +1,51 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Lambchomp.Essentials;
+using Chomp.Essentials;
 using System.IO;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public partial class StageManager : Singleton<StageManager>
 {
-	[Export] private string[] stageDirectories = new string[2] {"Scene/Stage/Core/", "Scene/Stage/Location/" };
+    [Export] private string[] stageDirectories = new string[2] {"Scene/Stage/Core/", "Scene/Stage/Location/" };
+    [Export] private GameAction[] gameStartActions;
     private Dictionary<string, StageData> stageLookup = new();
-    public Dictionary<string, StageData> StageLookup => stageLookup;
-	private int stageCount = 0;
-	public int StageCount => stageCount;
-	private  List<Node> loadedStages = new();
-	public List<Node> LoadedStages => loadedStages;
-    public List<Node> totalStages = new();
-    public List<Node> TotalStages => totalStages;
-	private Node activeStage;
-	public Node ActiveStage => activeStage;
-	public Action<Node> ActiveStageChanged = delegate { };
-    public Action<Node> StageLoaded = delegate { };
-    public Action<Node> StageUnloaded = delegate { };
-    public Action<Node> StageUnloading = delegate { };
-    public List<Node> unloadingStages = new();
+    public static Dictionary<string, StageData> StageLookup => Instance.stageLookup;
+    private int stageCount = 0;
+    public static int StageCount => Instance.stageCount;
+    private List<Node> loadedStages = new();
+    public static List<Node> LoadedStages => Instance.loadedStages;
+    private List<Node> totalStages = new();
+    public static List<Node> TotalStages => Instance.totalStages;
+    private Node activeStage;
+    public static Node ActiveStage => Instance.activeStage;
+    public Action<Node> activeStageChanged = delegate { };
+    public static Action<Node> ActiveStageChanged { get { return Instance.activeStageChanged; } set { Instance.activeStageChanged = value; } }
+    public Action<Node> stageLoaded = delegate { };
+    public static Action<Node> StageLoaded { get { return Instance.stageLoaded; } set { Instance.stageLoaded = value; } }
+    public Action<Node> stageUnloaded = delegate { };
+    public static Action<Node> StageUnloaded { get { return Instance.stageUnloaded; } set { Instance.stageUnloaded = value; } }
+    public Action<Node> stageUnloading = delegate { };
+    public static Action<Node> StageUnloading { get { return Instance.stageUnloading; } set { Instance.stageUnloading = value; } }
+    private List<Node> unloadingStages = new();
 
     public struct StageData {
-		public StageData(string ScenePath, string SceneName, PackedScene PackedScene) {
-			this.Path = ScenePath;
-			this.Name = SceneName;
-			this.PackedScene = PackedScene;
-		}
+        public StageData(string ScenePath, string SceneName, PackedScene PackedScene) {
+            this.Path = ScenePath;
+            this.Name = SceneName;
+            this.PackedScene = PackedScene;
+        }
         public string Path;
         public string Name;
         public PackedScene PackedScene;
     }
 
-	public override void _EnterTree() {
+    public override void _Ready() {
+        gameStartActions.Invoke(this);
+    }
+
+    public override void _EnterTree() {
         foreach (var directory in stageDirectories) {
             foreach (var filePath in Directory.GetFiles(directory, "*.tscn")) {
                 string name = Path.GetFileNameWithoutExtension(filePath);
@@ -69,43 +78,53 @@ public partial class StageManager : Singleton<StageManager>
         };
     }
 
-    public void UnloadStage(Node scene) {
-        unloadingStages.Add(scene);
-        scene.TreeExited += () => unloadingStages.Remove(scene);
+    public static void UnloadStage(Node scene) {
+        Instance.unloadingStages.Add(scene);
+        scene.TreeExited += () => Instance.unloadingStages.Remove(scene);
         StageUnloading.Invoke(scene);
         scene.QueueFree();
     }
 
-    public bool IsStageUnloading(Node scene) {
-        return unloadingStages.Contains(scene);
+    public static Node LoadStage(PackedScene packedScene) {
+        return Instance.InstantiateChild(packedScene, default, false);
+	}
+
+    public static bool IsStageUnloading(Node scene) {
+        return Instance.unloadingStages.Contains(scene);
     }
 
-	public void SetActiveStage(Node scene) {
-        if (activeStage == scene)
+    public static void SetActiveStage(Node scene) {
+        if (Instance.activeStage == scene)
             return;
-        activeStage = scene;
-		scene.TreeExiting += () => {
-			if (activeStage == scene)
-				activeStage = null;
-		};
+        Instance.activeStage = scene;
+        scene.TreeExiting += () => {
+            if (Instance.activeStage == scene)
+                Instance.activeStage = null;
+        };
         ActiveStageChanged.Invoke(scene);
     }
 
-    public void SetActiveStage(string sceneName) {
-		foreach (var scene in loadedStages) {
-			if (scene.Name == sceneName) {
+    public static void SetActiveStage(string sceneName) {
+        foreach (var scene in Instance.loadedStages) {
+            if (scene.Name == sceneName) {
                 SetActiveStage(scene);
                 return;
             }
-		}
+        }
     }
 
-    public Node GetLoadedStage(string sceneName) {
-        foreach (var scene in loadedStages) {
+    public static Node GetLoadedStage(string sceneName) {
+        foreach (var scene in Instance.loadedStages) {
             if (scene.Name == sceneName)
                 return scene;
         }
         return null;
+    }
+
+    public static StageData GetStageData(string sceneName) {
+        if (Instance.stageLookup.ContainsKey(sceneName))
+            return Instance.stageLookup[sceneName];
+        return default;
     }
 }
 

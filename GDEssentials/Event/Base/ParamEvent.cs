@@ -2,14 +2,14 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public abstract partial class ParamEvent<T> : GameEvent
 {
     [Export] private bool dispatchLastStateOnAdd = false;
     private List<ParamEventListener<T>> eventListeners = new();
     private List<Action<T>> scriptEventListeners = new();
-    private T lastParameter;
+    protected T lastParameter;
     public T LastParameter { get { return (lastParameter != null) ? lastParameter : invokingParam; } }
     private bool hasParameter;
     public bool HasParameter { get { return hasParameter || isInvoking; } }

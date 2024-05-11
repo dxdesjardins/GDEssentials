@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 [GlobalClass]
 [Tool]

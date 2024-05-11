@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public partial class ActivationListener : Node {
     [Export] private GameAction[] enterTreeActions;
@@ -13,25 +13,23 @@ public partial class ActivationListener : Node {
     private bool readyTriggered = false;
 
     public override void _EnterTree() {
-        enterTreeActions.Invoke(this);
+        enterTreeActions?.Invoke(this);
         RequestReady();
     }
 
     public override void _ExitTree() {
-        exitTreeActions.Invoke(this);
+        exitTreeActions?.Invoke(this);
     }
 
     public override void _Ready() {
         if (!readyTriggered) {
             readyTriggered = true;
-            readyActions.Invoke(this);
+            readyActions?.Invoke(this);
         }
-        enterTreeReadyActions.Invoke(this);
-        GD.Print("invoked");
+        enterTreeReadyActions?.Invoke(this);
     }
 
     public void Invoke() {
-        invokeActions.Invoke(this);
-        GD.Print("removed");
+        invokeActions?.Invoke(this);
     }
 }

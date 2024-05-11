@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public static class ExtensionsTilemap
 {

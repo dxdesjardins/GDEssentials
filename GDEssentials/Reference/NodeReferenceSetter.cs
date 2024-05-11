@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 /// <summary> NodeReferenceSetter must be positioned after or below the object it is pointing to. </summary>
 public partial class NodeReferenceSetter : Node

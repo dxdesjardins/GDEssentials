@@ -1,9 +1,10 @@
+using Fractural.Tasks;
 using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public static class ExtensionsNode
 {
@@ -60,18 +61,14 @@ public static class ExtensionsNode
             node = node.GetParent() ?? node;
         if (includeParent && node is T parent)
             return parent;
-        foreach (Node n in node.GetChildren(true)) {
+        var nodes = node.GetChildren(true);
+        if (nodes.Count == 0)
+            return default;
+        foreach (Node n in nodes) {
             if (n is T child)
                 return child;
         }
         return default;
-    }
-
-    public static Node GetScene(this Node node) {
-        if (node.Owner != null)
-            return node.Owner;
-        else
-            return node.GetParent();
     }
 
     public static void SetActive(this Node node, bool state) {
@@ -81,26 +78,26 @@ public static class ExtensionsNode
         node.ProcessMode = (state) ? Node.ProcessModeEnum.Inherit : Node.ProcessModeEnum.Disabled;
     }
 
-    public static Node InstantiateChild(this Node node, PackedScene packedScene, Vector2 position = default) {
-        Node newScene = packedScene.Instantiate<Node>();
-        Node instance = node.InstantiateChild(newScene, position);
-        instance.Name = System.IO.Path.GetFileNameWithoutExtension(packedScene.ResourcePath);
+    public static Node AddChild(this Node parent, Node instance, Vector2 position = default) {
+        if (instance is Node2D node2D)
+            node2D.Position = position;
+        else if (instance is Control control)
+            control.Position = position;
+        parent.AddChild(instance);
         return instance;
     }
 
-    public static Node InstantiateChild(this Node node, Node preloadedNode, Vector2 position = default) {
-        if (preloadedNode is Node2D node2D)
-            node2D.Position = position;
-        else if (preloadedNode is Control control)
-            control.Position = position;
-        node.AddChild(preloadedNode);
-        return preloadedNode;
-    }
+	public static Node InstantiateChild(this Node parent, PackedScene packedScene, Vector2 position = default, bool rename = true) {
+		Node instance = packedScene.Instantiate<Node>();
+        if (rename)
+		    instance.MakeNameUnique();
+		Node child = parent.AddChild(instance, position);
+		return child;
+	}
 
-	public static T InstantiateChild<T>(this Node node, Vector2 position = default) where T : Node {
+	public static T InstantiateChild<T>(this Node parent, Vector2 position = default) where T : Node {
 		Node instance = (Node)Activator.CreateInstance(typeof(T));
-		instance.Name = typeof(T).Name;
-        return node.InstantiateChild(instance, position) as T;
+		return parent.AddChild(instance, position) as T;
 	}
 
 	/// <summary> Returns the Node that has the top rendered deep Sprite2D and at least one shallow child inheriting T. </summary>
@@ -204,6 +201,12 @@ public static class ExtensionsNode
         return -1;
     }
 
+    public static async void CallDeferred(this GodotObject node, Action action, int frames = 1) {
+        for (int i = 0; i < frames; i++)
+            await node.ToSignal(Engine.GetMainLoop() as SceneTree, SceneTree.SignalName.ProcessFrame);
+        action.Invoke();
+    }
+
     public static void SafeAddChild(this Node parent, Node child) {
         if (parent.IsNodeReady())
             parent.AddChild(child);
@@ -258,4 +261,22 @@ public static class ExtensionsNode
         while (node != null);
         return null;
     }
+
+    public static Node GetScene(this Node node) {
+        if (node.Owner != null)
+            return node.Owner;
+        do {
+            node = node.GetParent();
+            if (!string.IsNullOrEmpty(node.SceneFilePath))
+                return node;
+        }
+        while (node != null);
+        return null;
+    }
+
+    public static string MakeNameUnique(this Node node, string name = null) {
+        name ??= node.Name + node.GetHashCode();
+        node.Name = name;
+        return name;
+	}
 }

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public static class ExtensionsInput
 {

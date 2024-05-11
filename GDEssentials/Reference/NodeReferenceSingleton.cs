@@ -2,13 +2,13 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
-public abstract partial class StaticReference<T> : NodeReference where T : StaticReference<T>
+public abstract partial class NodeReferenceSingleton<T> : NodeReference where T : NodeReferenceSingleton<T>
 {
     private static NodeReference referenceInstance;
 
-    public static Node Instance_ { 
+    public static new Node Instance { 
         get { return referenceInstance.Instance; } 
         set { referenceInstance.Instance = value; }
     }
@@ -25,7 +25,7 @@ public abstract partial class StaticReference<T> : NodeReference where T : Stati
         referenceInstance.RemoveListener(listener);
     }
 
-    public StaticReference() {
+    public NodeReferenceSingleton() {
         if (referenceInstance == null)
             referenceInstance = this;
         else {

@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 [GlobalClass]
 public partial class SetLight2DEnergyAction : ParamAction<float>

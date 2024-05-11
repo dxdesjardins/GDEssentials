@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Lambchomp.Essentials;
+namespace Chomp.Essentials;
 
 public abstract partial class ResourceSingleton<T> : Resource where T : ResourceSingleton<T>
 {
@@ -10,29 +10,25 @@ public abstract partial class ResourceSingleton<T> : Resource where T : Resource
 
     public static T Instance {
         get {
-            if (instance == null)
-                CreateInstance();
+            instance ??= GetInstance();
             return instance;
         }
         set { instance = value; }
     }
 
     public ResourceSingleton() {
-        if (instance == default)
-            instance = this as T;
-        else {
+        if (instance != null && !Engine.IsEditorHint()) {
             GD.PrintErr("Class " + typeof(T).Name + " exists multiple times in violation of singleton pattern. Destroying copy.");
             this.Free();
         }
     }
 
-    protected static T CreateInstance() {
-        if (instance != null)
-            GD.PrintErr("Warning: Instancing missing ResourceSingleton: ", typeof(T).Name, ".");    
-        T _instance = (T)Activator.CreateInstance(typeof(T));
-        _instance.ResourceName = typeof(T).Name;
-        instance = _instance;
-        return instance;
+    protected static T GetInstance() {
+        string resourcePath = "res://Resource/Reference/ResourceSingleton/" + typeof(T).Name + ".tres";
+        resourcePath = ResourceLoader.Exists(resourcePath) ? resourcePath : "res://Resource/Reference/ResourceReference/" + typeof(T).Name + ".tres";
+        T _instance = GD.Load(resourcePath) as T;
+        if (_instance == null)
+            GD.PrintErr("Warning: ", typeof(T).Name, " failed to load. Is the resource in the singleton folder?");
+        return _instance;
     }
 }
-
