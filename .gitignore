@@ -1,7 +1,7 @@
 # Godot 4+ specific ignores
 .godot/
-GDEssentials.sln
-GDEssentials.csproj
+GDPool.sln
+GDPool.csproj
 .vs/
 project.godot
 MainScene.tscn
