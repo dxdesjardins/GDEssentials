@@ -1,6 +1,6 @@
 GDEssentials
 =================
-Custom event system and collection of tools for the Godot Game Engine. Many features reimplement functionality and popular repositories from Unity to Godot. This repository is designed to allow architecture of highly modular and independant entities, and to completely eliminate the need to use signal connections through the editor interface (eliminating reliance on breakable string references).
+Custom event system and collection of tools for the Godot Game Engine. Many features reimplement functionality and popular repositories from Unity to Godot. This repository is designed to allow architecture of highly modular and independant entities, and to completely eliminate the need to use signal connections through the editor interface (reducing reliance on breakable string references).
 
 Core Features
 ----
