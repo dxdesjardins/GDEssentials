@@ -157,18 +157,9 @@ public partial class StageManager : NodeSingleton<StageManager>
         IsTransitioning = false;
     }
 
-    public static async Task StartTransition() => await StartTransition(Instance.defaultTransition);
+    public static async Task StartTransition(string stageName) => await StartTransition(Instance.defaultTransition);
 
     public static async Task<Node> UnloadStage(Node stage) {
-        if (IsTransitioning) {
-            TaskCompletionSource<Node> fadeOutTcs = new();
-            void fadeOutAction(Node node) {
-                fadeOutTcs.TrySetResult(node);
-                TransitionAfterFadeOut -= fadeOutAction;
-            }
-            TransitionAfterFadeIn += fadeOutAction;
-            await fadeOutTcs.Task;
-        }
         UnloadingStages.Add(stage);
         if (ActiveStage == stage)
             ActiveStageUnloading.Invoke(stage);

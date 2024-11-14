@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Chomp.Essentials;
 
@@ -143,5 +144,16 @@ public static class GDE
                 resources.Add(resource);
         }
         return resources;
+    }
+
+    // This is a temporary workaround since the Engine changing the Uid of a resource via ResourceUid and ResourceSaver is currently broken.
+    public static void ChangeResourceUid(string filePath, string newUid) {
+        filePath = ProjectSettings.GlobalizePath(filePath);
+        string[] lines = File.ReadAllLines(filePath);
+        string pattern = @"uid=""uid://[^""]+""";
+        string replacement = $"uid=\"{newUid}\"";
+        if (Regex.IsMatch(lines[0], pattern))
+            lines[0] = Regex.Replace(lines[0], pattern, replacement);
+        File.WriteAllLines(filePath, lines);
     }
 }

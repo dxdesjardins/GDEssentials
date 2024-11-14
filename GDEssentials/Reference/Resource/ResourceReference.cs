@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace Chomp.Essentials;
 
@@ -24,20 +25,29 @@ public abstract partial class ResourceReference<TDerived, TResource> : Resource 
             if (!string.IsNullOrEmpty(uid)) {
                 long uidL = ResourceUid.TextToId(uid);
                 if (!ResourceUid.HasId(uidL)) {
-                    ResourceUid.AddId(uidL, this.ResourcePath);
-                    GDE.Log($"ResourceReference: {typeof(TDerived)} UID({nameof(ResourceUidAttribute)}) has been assigned to Path({this.ResourcePath}).");
+                    string newPath = this.ResourcePath;
+                    ResourceUid.RemoveId(this.GetUid());
+                    ResourceUid.AddId(uidL, newPath);
+                    GDE.ChangeResourceUid(newPath, uid);
+                    GDE.Log($"{typeof(TDerived).Name} UID({uid}) has been assigned to Path({newPath}).");
                 }
-                else if (GDE.UidToResource(uidL) is not TResource)
-                    GDE.LogErr($"ResourceReference: {typeof(TDerived)} UID({nameof(ResourceUidAttribute)}) is pointing to the wrong resource type.");
+                else if (GDE.UidToResource(uidL) is not TResource) {
+                    GDE.LogErr($"{typeof(TDerived).Name} UID({uid}) is not pointing to the correct resource.");
+                    string newPath = this.ResourcePath;
+                    ResourceUid.RemoveId(this.GetUid());
+                    ResourceUid.AddId(uidL, newPath);
+                    GDE.ChangeResourceUid(newPath, uid);
+                    GDE.Log($"{typeof(TDerived).Name} UID({uid}) has been assigned to Path({newPath}).");
+                }
             }
             string path = GetResourcePath();
             if (string.IsNullOrEmpty(path))
                 return;
-            Resource resource = GD.Load(GetResourcePath());
+            Resource resource = GD.Load(path);
             if (resource is null)
-                GDE.LogErr($"ResourceReference: {typeof(TDerived)} is not pointing to a resource.");
+                GDE.LogErr($"{typeof(TDerived).Name} is not pointing to a resource.");
             else if (resource is not TResource)
-                GDE.LogErr($"ResourceReference: {typeof(TDerived)} is pointing to the incorrect type of resource.");
+                GDE.LogErr($"{typeof(TDerived).Name} is not pointing to the correct resource.");
         });
     }
 
@@ -52,7 +62,7 @@ public abstract partial class ResourceReference<TDerived, TResource> : Resource 
                 return;
             _Instance = (TResource)Activator.CreateInstance(typeof(TResource));
             ResourceSaver.Save(_Instance, filePath);
-            GDE.Log($"ResourceReference: {typeof(TDerived).Name} instance has been created at Path({filePath}).");
+            GDE.Log($"{typeof(TDerived).Name} instance has been created at Path({filePath}).");
         }
     }
 
@@ -64,7 +74,7 @@ public abstract partial class ResourceReference<TDerived, TResource> : Resource 
             else if (attribute is ResourcePathAttribute pathAttribute)
                 return pathAttribute.Path;
         }
-        GDE.LogErr($"ResourceReference: {typeof(TDerived)} does not have a valid {nameof(ResourceUidAttribute)} or {nameof(ResourcePathAttribute)}.");
+        GDE.LogErr($"{typeof(TDerived).Name} does not have a valid ResourceUidAttribute or ResourcePathAttribute.");
         return string.Empty;
     }
 

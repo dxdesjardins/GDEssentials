@@ -22,7 +22,7 @@ public abstract partial class NodeSingleton<T> : Node2D where T : NodeSingleton<
     public NodeSingleton() {
         if (instance == null || Engine.IsEditorHint()) {
             instance = this as T;
-            _ = GDE.CallDeferred(() => this.TreeExited += () => instance = null);
+			_ = GDE.CallDeferred(() => this.TreeExited += () => instance = null);
         }
         else {
             GDE.LogErr($"{typeof(T).Name} exists multiple times in violation of singleton pattern. Destroying copy.");
