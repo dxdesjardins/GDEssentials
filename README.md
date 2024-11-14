@@ -23,7 +23,7 @@ If using my StageManager (required by my GDPool/GDSave repositories and some ext
 Usage
 ----
 ```csharp
-// Declaring a Node singleton class.
+// Declaring a Node singleton.
 public partial class ExampleSingleton : NodeSingleton<ExampleSingleton> {
     void ExampleMethod() { }
 }
