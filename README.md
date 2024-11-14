@@ -20,7 +20,7 @@ If using my StageManager (required by my GDPool/GDSave repositories and some ext
 1. All Stages in the project must have a root node inheriting IStage. For a 2D game, a level/world would have a root node of type Stage2D.
 2. Set a single StageManager Node as your main scene. Configure this node with the path to the directory containing your stages and the PackedScenes of the stages you want to load on game start.
 
-Usage Examples
+Usage
 ----
 ```csharp
 // Declaring a Node singleton class.
