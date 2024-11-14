@@ -7,7 +7,7 @@ Core Features
 1. A custom event and referencing system for creation and handling of serializable GameEvents, GameActions, Node/Resource References, and Variables. Various listener scripts interacting with this system are included. This is useful for architecting highly modular and independant scenes that do not rely on editor interface signals to communicate.
 2. Generic singleton implementations for Nodes and Resources.
 3. A collection of extension methods and utilities.
-4. A StageManager singleton. I define a stage as a highest level scene, such as a GameLevel or PersistentDataStage.
+4. Custom StageManager and PreferenceManager singletons. I define a stage as a highest level scene, such as a GameLevel or PersistentDataStage.
 
 Requirements
 ----
