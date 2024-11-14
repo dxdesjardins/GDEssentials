@@ -15,7 +15,6 @@ public static class ExtensionsRaycast
     }
 
     private static T GetRaycastCollision<T>(PhysicsDirectSpaceState2D spaceState, Vector2 from, Vector2 to, uint collisionMask = 0b11111111111111111111) {
-        CircleShape2D circleshape = new CircleShape2D();
         PhysicsRayQueryParameters2D query = PhysicsRayQueryParameters2D.Create(from, to, collisionMask);
         query.CollideWithAreas = true;
         query.HitFromInside = true;
@@ -25,7 +24,7 @@ public static class ExtensionsRaycast
             result = spaceState.IntersectRay(query);
             if (result.Count > 0) {
                 Node collision = (Node)result["collider"];
-                T obj = collision.GetComponent<T>();
+                T obj = collision.GetComponent<T>(false);
                 if (obj != null)
                     return obj;
                 Godot.Collections.Array<Rid> exclude = query.Exclude;
@@ -55,7 +54,7 @@ public static class ExtensionsRaycast
             result = spaceState.IntersectRay(query);
             if (result.Count > 0) {
                 Node collision = (Node)result["collider"];
-                T obj = collision.GetComponent<T>();
+                T obj = collision.GetComponent<T>(false);
                 if (obj != null)
                     objects.Add(obj);
                 Godot.Collections.Array<Rid> exclude = query.Exclude;
@@ -75,16 +74,16 @@ public static class ExtensionsRaycast
     }
 
     private static T[] GetPointcastCollisions<T>(PhysicsDirectSpaceState2D spaceState, Vector2 position, bool includeAreas = true, uint collisionMask = 0b11111111111111111111) {
-        PhysicsPointQueryParameters2D query = new PhysicsPointQueryParameters2D {
+        PhysicsPointQueryParameters2D query = new() {
             CollideWithAreas = includeAreas,
             CollisionMask = collisionMask, // In the example '0b11111111111111111111' all 20 collision layers are set to be detected
             Position = position,
         };
         Godot.Collections.Array<Godot.Collections.Dictionary> results = spaceState.IntersectPoint(query);
-        List<T> objects = new List<T>();
+        List<T> objects = new();
         foreach (var result in results) {
             Node collision = (Node)result["collider"];
-            T obj = collision.GetComponent<T>();
+            T obj = collision.GetComponent<T>(false);
             if (obj != null)
                 objects.Add(obj);
         }
@@ -100,7 +99,7 @@ public static class ExtensionsRaycast
     }
 
     private static T[] GetShapecastCollisions<T>(PhysicsDirectSpaceState2D spaceState, Shape2D shape, Vector2 position, int maxResults = 32, uint collisionMask = 0b11111111111111111111) {
-        PhysicsShapeQueryParameters2D query = new PhysicsShapeQueryParameters2D {
+        PhysicsShapeQueryParameters2D query = new() {
             CollideWithAreas = false,
             CollisionMask = collisionMask, // In the example '0b11111111111111111111' all 20 collision layers are set to be detected
             Shape = shape,
@@ -110,10 +109,13 @@ public static class ExtensionsRaycast
         List<T> objects = new List<T>();
         foreach (var result in results) {
             Node collision = (Node)result["collider"];
-            T obj = collision.GetComponent<T>();
+            T obj = collision.GetComponent<T>(false);
             if (obj != null)
                 objects.Add(obj);
         }
         return objects.ToArray();
     }
+
+    public static Node[] GetShapecastCollisions(this Node2D node, Shape2D shape, Vector2 position, int maxResults = 32, uint collisionMask = 0b11111111111111111111) => GetShapecastCollisions<Node>(node, shape, position, maxResults, collisionMask);
+    public static Node[] GetShapecastCollisions(this Control node, Shape2D shape, Vector2 position, int maxResults = 32, uint collisionMask = 0b11111111111111111111) => GetShapecastCollisions<Node>(node, shape, position, maxResults, collisionMask);
 }

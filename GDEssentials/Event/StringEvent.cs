@@ -8,4 +8,8 @@ namespace Chomp.Essentials;
 [Tool]
 public partial class StringEvent : ParamEvent<string>
 {
+    [Export] private string Value {
+        get => DefaultParameter;
+        set => DefaultParameter = value;
+    }
 }

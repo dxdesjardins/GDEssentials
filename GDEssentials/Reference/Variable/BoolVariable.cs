@@ -7,5 +7,8 @@ namespace Chomp.Essentials;
 [GlobalClass]
 public partial class BoolVariable : GameVariable<bool>
 {
-    [Export] private bool Variable { get => variable; set => variable = value; }
+    [Export] public bool DefaultValue {
+        get => defaultValue;
+        set => defaultValue = value;
+    }
 }

@@ -5,7 +5,11 @@ using System.Collections.Generic;
 namespace Chomp.Essentials;
 
 [GlobalClass]
+[Tool]
 public partial class IntVariable : GameVariable<int>
 {
-    [Export] private int Variable { get => variable; set => variable = value; }
+    [Export] public int DefaultValue {
+        get => defaultValue;
+        set => defaultValue = value;
+    }
 }

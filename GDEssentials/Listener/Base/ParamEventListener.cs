@@ -12,18 +12,14 @@ public abstract partial class ParamEventListener<T> : Node
     [Export] protected GameAction[] eventActions;
 
     public override void _EnterTree() {
-        RequestReady();
+        EventObject?.AddListener(this);
+        if (invokeOnEnable)
+            ReDispatch();
     }
 
     public override void _ExitTree() {
         EventObject?.RemoveListener(this);
         if (invokeOnDisable)
-            ReDispatch();
-    }
-
-    public override void _Ready() {
-        EventObject?.AddListener(this);
-        if (invokeOnEnable)
             ReDispatch();
     }
 

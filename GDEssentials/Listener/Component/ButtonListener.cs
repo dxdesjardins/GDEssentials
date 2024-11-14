@@ -4,31 +4,35 @@ using System.Collections.Generic;
 
 namespace Chomp.Essentials;
 
-public partial class ButtonListener : Node
+public partial class ButtonListener : Button
 {
-    [Export] private Button target;
-    [Export] private GameAction[] buttonDownActions;
-    [Export] private GameAction[] buttonUpActions;
     [Export] private GameAction[] buttonPressedActions;
     [Export] private GameAction[] buttonToggledActionsBool;
+    [Export] private GameAction[] buttonDownActions;
+    [Export] private GameAction[] buttonUpActions;
+    [Export] private GameAction[] mouseEnteredAction;
+    [Export] private GameAction[] mouseExitedAction;
 
     public override void _EnterTree() {
         RequestReady();
     }
 
     public override void _ExitTree() {
-        target.ButtonDown -= InvokeButtonDownActions;
-        target.ButtonUp -= InvokeButtonUpActions;
-        target.Pressed -= InvokeButtonPressedActions;
-        target.Toggled -= InvokeButtonToggledActionsBool;
+        this.ButtonDown -= InvokeButtonDownActions;
+        this.ButtonUp -= InvokeButtonUpActions;
+        this.Pressed -= InvokeButtonPressedActions;
+        this.Toggled -= InvokeButtonToggledActionsBool;
+        this.MouseEntered -= InvokeMouseEnteredActions;
+        this.MouseExited -= InvokeMouseExitedActions;
     }
 
     public override void _Ready() {
-        target ??= this.GetParent<Button>();
-        target.ButtonDown += InvokeButtonDownActions;
-        target.ButtonUp += InvokeButtonUpActions;
-        target.Pressed += InvokeButtonPressedActions;
-        target.Toggled += InvokeButtonToggledActionsBool;
+        this.ButtonDown += InvokeButtonDownActions;
+        this.ButtonUp += InvokeButtonUpActions;
+        this.Pressed += InvokeButtonPressedActions;
+        this.Toggled += InvokeButtonToggledActionsBool;
+        this.MouseEntered += InvokeMouseEnteredActions;
+        this.MouseExited += InvokeMouseExitedActions;
     }
 
     public void InvokeButtonDownActions() {
@@ -45,5 +49,13 @@ public partial class ButtonListener : Node
 
     public void InvokeButtonToggledActionsBool(bool state) {
         buttonToggledActionsBool.Invoke<bool>(state, this);
+    }
+
+    public void InvokeMouseEnteredActions() {
+        mouseEnteredAction.Invoke(this);
+    }
+
+    public void InvokeMouseExitedActions() {
+        mouseExitedAction.Invoke(this);
     }
 }

@@ -16,9 +16,7 @@ public static class ExtensionsInput
         return v.Keycode == key && !v.Pressed && !v.Echo;
     }
 
-    /// <summary>
-    /// Convert to a human readable key.
-    /// </summary>
+    /// <summary> Convert to a human readable key. </summary>
     public static string Readable(this InputEventKey v) {
         // If Keycode is not set than use PhysicalKeycode
         Key keyWithModifiers = v.Keycode == Key.None ? v.GetPhysicalKeycodeWithModifiers() : v.GetKeycodeWithModifiers();

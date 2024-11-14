@@ -6,23 +6,23 @@ namespace Chomp.Essentials;
 
 public partial class TimerListener : Node
 {
-    [Export] private Timer target;
-    [Export] private GameAction[] timeoutAtions;
+    [Export] private Timer timer;
+    [Export] private GameAction[] timeoutActions;
 
     public override void _EnterTree() {
         RequestReady();
     }
 
     public override void _ExitTree() {
-        target.Timeout -= InvokeTimeoutActions;
+        timer.Timeout -= InvokeTimeoutActions;
     }
 
     public override void _Ready() {
-        target ??= this.GetParent<Timer>();
-        target.Timeout += InvokeTimeoutActions;
+        timer ??= this.GetParent<Timer>();
+        timer.Timeout += InvokeTimeoutActions;
     }
 
     public void InvokeTimeoutActions() {
-        timeoutAtions.Invoke(this);
+        timeoutActions.Invoke(this);
     }
 }

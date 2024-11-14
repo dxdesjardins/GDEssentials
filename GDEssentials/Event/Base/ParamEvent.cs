@@ -6,29 +6,35 @@ namespace Chomp.Essentials;
 
 public abstract partial class ParamEvent<T> : GameEvent
 {
-    [Export] private bool dispatchLastStateOnAdd = false;
-    private List<ParamEventListener<T>> eventListeners = new();
-    private List<Action<T>> scriptEventListeners = new();
+    [Export] protected bool dispatchLastStateOnAdd = false;
+    protected List<ParamEventListener<T>> eventListeners = new();
+    protected List<Action<T>> scriptEventListeners = new();
+    private T defaultParameter;
+    public T DefaultParameter {
+        get => defaultParameter;
+        protected set {
+            defaultParameter = value;
+            lastParameter = value;
+        }
+    }
     protected T lastParameter;
-    public T LastParameter { get { return (lastParameter != null) ? lastParameter : invokingParam; } }
-    private bool hasParameter;
-    public bool HasParameter { get { return hasParameter || isInvoking; } }
-    private bool isInvoking;
-    public bool IsInvoking { get { return isInvoking; } }
-    private T invokingParam;
-    public T InvokingParam { get { return invokingParam; } }
+    public virtual T LastParameter => (lastParameter != null) ? lastParameter : InvokingParam;
+    protected bool hasParameter;
+    public bool HasParameter { get { return hasParameter || IsInvoking; } }
+    public bool IsInvoking { get; protected set; }
+    public T InvokingParam { get; protected set; }
 
-
-    public void Invoke(T param) {
-        isInvoking = true;
-        invokingParam = param;
+    public virtual void Invoke(T param) {
+        IsInvoking = true;
+        InvokingParam = param;
         for (int i = scriptEventListeners.Count - 1; i >= 0; i--)
             scriptEventListeners[i].Invoke(param);
         for (int i = eventListeners.Count - 1; i >= 0; i--)
             eventListeners[i].Dispatch(param);
         lastParameter = param;
         hasParameter = true;
-        isInvoking = false;
+        IsInvoking = false;
+        InvokingParam = default;
     }
 
     public override void AddListener(Action listener) {
@@ -36,24 +42,24 @@ public abstract partial class ParamEvent<T> : GameEvent
         AddListener(paramAction);
     }
 
-    public void AddListener(Action<T> listener) {
+    public virtual void AddListener(Action<T> listener) {
         scriptEventListeners.Add(listener);
         if (dispatchLastStateOnAdd && hasParameter)
             listener.Invoke(lastParameter);
     }
 
-    public void RemoveListener(Action<T> listener) {
+    public virtual void RemoveListener(Action<T> listener) {
         scriptEventListeners.Remove(listener);
     }
 
-    public void AddListener(ParamEventListener<T> listener) {
+    public virtual void AddListener(ParamEventListener<T> listener) {
         if (!eventListeners.Contains(listener))
             eventListeners.Add(listener);
         if (dispatchLastStateOnAdd && hasParameter)
             listener.Dispatch(lastParameter);
     }
 
-    public void RemoveListener(ParamEventListener<T> listener) {
-            eventListeners.Remove(listener);
+    public virtual void RemoveListener(ParamEventListener<T> listener) {
+        eventListeners.Remove(listener);
     }
 }

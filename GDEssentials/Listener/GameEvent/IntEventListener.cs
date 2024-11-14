@@ -4,17 +4,12 @@ using System.Collections.Generic;
 
 namespace Chomp.Essentials;
 
-public partial class IntEventListener : ParamEventListener<bool> {
-    [Export] private BoolEvent eventObject;
-    protected override ParamEvent<bool> EventObject { get {	return eventObject;	} }
-    [Export] private GameAction[] onTrue;
-    [Export] private GameAction[] onFalse;
+public partial class IntEventListener : ParamEventListener<int>
+{
+    [Export] private IntEvent eventObject;
+    protected override ParamEvent<int> EventObject { get { return eventObject; } }
 
-    public override void Dispatch(bool parameter) {
-        eventActions?.Invoke<bool>(parameter, this);
-        if (parameter)
-            onTrue?.Invoke(this);
-        else
-            onFalse?.Invoke(this);
+    public override void Dispatch(int parameter) {
+        eventActions?.Invoke(parameter, this);
     }
 }

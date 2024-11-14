@@ -9,8 +9,7 @@ public partial class SceneInstantiateListener : Node
     [Export] private GameAction[] instantiateActions;
 
     public override void _Notification(int what) {
-        if (what == NotificationSceneInstantiated) {
+        if (what == NotificationSceneInstantiated)
             instantiateActions.Invoke(this);
-        }
     }
 }

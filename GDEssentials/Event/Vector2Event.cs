@@ -9,7 +9,7 @@ namespace Chomp.Essentials;
 public partial class Vector2Event : ParamEvent<Vector2>
 {
     [Export] private Vector2 Value {
-        get { return lastParameter; }
-        set { lastParameter = value; }
+        get => DefaultParameter;
+        set => DefaultParameter = value;
     }
 }
