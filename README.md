@@ -28,8 +28,8 @@ public partial class ExampleSingleton : NodeSingleton<ExampleSingleton> {
     void ExampleMethod() { }
 }
 
-// Getting the Node singleton instance in code. If the singleton did not exist, it will automatically be created and
-// added to the tree by default.
+// Getting the Node singleton instance in code.
+// If the singleton did not exist, it will automatically be created and added to the tree by default.
 ExampleSingleton.Instance.ExampleMethod();
 
 // Declaring a PackedScene resource reference using its UID.
