@@ -18,7 +18,7 @@ Setup
 ----
 If using my StageManager (required by my GDPool/GDSave repositories and some extensions):
 1. All Stages in the project must have a root node inheriting IStage. For a 2D game, a level/world would have a root node of type Stage2D.
-2. Create a scene with the StageManager (this should be the only node in the scene). Configure the StageManager with the path to the directory containing your stages. You can either:
+2. Create a scene with a single StageManager node. Configure the StageManager with the path to the directory containing your stages. You can either:
    1. Set the StageManager scene as an autoload. All spawned stages will become children of the tree root.Set the StageManager scene as your main scene.
    2. All spawned stages will become children of the StageManager. This is ideal for 2D games which need to enable `Y Sort`.
 
