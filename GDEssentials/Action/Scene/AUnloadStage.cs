@@ -8,16 +8,16 @@ namespace Chomp.Essentials;
 [Tool]
 public partial class AUnloadStage : ParamAction<PackedScene>
 {
-    [Export] private PackedScene stagePacked;
+    [Export] private ResourceWeakRef stage;
 
-    public override void Invoke(PackedScene stage, Node node) {
-        Node _target;
-        if (stagePacked == null)
-            _target = node.GetStage();
+    public override async void Invoke(PackedScene stage, Node node) {
+        Node target;
+        if (this.stage == null)
+            target = node.GetStage();
         else
-            _target = StageManager.GetLoadedStage(stage.ResourceName);
-        _ = StageManager.UnloadStage(_target);
+            target = StageManager.GetLoadedStage(this.stage.GetUidString());
+        await StageManager.UnloadStage(target);
     }
 
-    public override void Invoke(Node node) => Invoke(stagePacked, node);
+    public override void Invoke(Node node) => Invoke(stage, node);
 }

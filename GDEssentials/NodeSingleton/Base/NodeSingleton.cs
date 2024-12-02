@@ -46,7 +46,7 @@ public abstract partial class NodeSingleton<T> : Node2D where T : NodeSingleton<
                     return instance;
                 }
                 else {
-                    GDE.LogErr($"Class {typeof(T).Name} exists multiple times in violation of singleton pattern. Destroying all copies.");
+                    GDE.LogErr($"{typeof(T).Name} exists multiple times in violation of singleton pattern. Destroying all copies.");
                     foreach (T singleton in singletons)
                         singleton.QueueFree();
                 }

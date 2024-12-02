@@ -10,7 +10,7 @@ public static class ExtensionsResource
         return ResourceLoader.GetResourceUid(resource.ResourcePath);
     }
 
-    public static string GetUidToText(this Resource resource) {
+    public static string GetUidString(this Resource resource) {
         return ResourceUid.IdToText(GetUid(resource));
     }
 

@@ -10,7 +10,7 @@ public partial class AUnloadAllStages : GameAction
 {
     [Export] bool includePersistant = false;
 
-    public override void Invoke(Node node) {
-        _ = StageManager.UnloadAllStages(includePersistant);
+    public override async void Invoke(Node node) {
+        await StageManager.UnloadAllStages(includePersistant);
     }
 }

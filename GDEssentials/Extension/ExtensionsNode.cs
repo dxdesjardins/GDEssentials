@@ -170,6 +170,14 @@ public static class ExtensionsNode
 
     public static Node InstantiateChild(this Node parent, PackedScene packedScene, bool setUniqueName) => parent.InstantiateChild(packedScene, Vector2.Zero, setUniqueName);
 
+    public static Node SafeInstantiateChild(this Node parent, PackedScene packedScene, bool setUniqueName = true) {
+        Node instance = packedScene.Instantiate();
+        if (setUniqueName)
+            instance.SetUniqueName();
+        parent.SafeAddChild(instance);
+        return instance;
+    }
+
     /// <summary> Returns the Node that has the top rendered deep child Sprite2D and at least one shallow child inheriting T.
     /// <para> Example: If a pickaxe raycast2D hits multiple colliders and you only want it to only damage the top rendered entity. </para> </summary>
     public static Node GetTopRenderedNode2D<T>(this Node[] nodes, bool areParents = true) {
@@ -437,5 +445,17 @@ public static class ExtensionsNode
         if (parent == null || parent.GetChildren().Contains(node))
             return false;
         return true;
+    }
+
+    public static bool IsAnAutoload(this Node node) {
+        return node.GetParent() == node.GetTree().Root && node.GetTree().CurrentScene != node;
+    }
+
+    public static string GetUidString(this Node node) {
+        return GDE.PathToUidString(node.SceneFilePath);
+    }
+
+    public static long GetUid(this Node node) {
+        return GDE.PathToUid(node.SceneFilePath);
     }
 }

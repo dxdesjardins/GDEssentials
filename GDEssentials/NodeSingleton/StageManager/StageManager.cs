@@ -10,12 +10,14 @@ public partial class StageManager : NodeSingleton<StageManager>
     [Export] private string stageDirectory = "res://Scene/Stage";
     [Export] private GameAction[] gameStartActions;
     [Export] private PackedScene[] gameStartStages;
-    [Export] private PackedScene defaultTransition;
     private static bool initialized = false;
+
+    public static Node StageRoot { get; private set; }
 
     public static Dictionary<string, StageData> CachedStageData { get; private set; } = new();
     public static int StageCount { get; private set; }
-    public static string LastActiveStage { get; private set; }
+    public static string LastActiveStageName { get; private set; }
+    public static string LastActiveStageUid { get; private set; }
     public static bool IsQuittingGame { get; private set; }
     public static Node ActiveStage { get; private set; }
     public static bool IsTransitioning { get; private set; }
@@ -42,16 +44,11 @@ public partial class StageManager : NodeSingleton<StageManager>
     public static Action<bool> ApplicationPaused { get; set; } = delegate { };
     public static Action ApplicationQuitting { get; set; } = delegate { };
 
-    public struct StageData {
-        public string path;
-        public string name;
-        public PackedScene packedScene;
-
-        public StageData(string path, string name, PackedScene packedScene) {
-            this.path = path;
-            this.name = name;
-            this.packedScene = packedScene;
-        }
+    public struct StageData(string path, string fileName, PackedScene packedScene)
+    {
+        public string path = path;
+        public string fileName = fileName;
+        public PackedScene packedScene = packedScene;
     }
 
     public StageManager() => CacheStageData();
@@ -60,7 +57,8 @@ public partial class StageManager : NodeSingleton<StageManager>
         foreach (var packedScene in GDE.GetResourcesInDirectory<PackedScene>(stageDirectory)) {
             string path = packedScene.GetPath();
             string name = System.IO.Path.GetFileNameWithoutExtension(path);
-            CachedStageData.Add(name, new StageData(path, name, packedScene));
+            string uid = packedScene.GetUidString();
+            CachedStageData.Add(uid, new StageData(path, name, packedScene));
         }
     }
 
@@ -100,11 +98,19 @@ public partial class StageManager : NodeSingleton<StageManager>
         if (initialized)
             return;
         initialized = true;
-        this.ChildEnteredTree += (child) => {
+        if (this.IsAnAutoload())
+            StageRoot = this.GetTree().Root;
+        else
+            StageRoot = this;
+        StageRoot.ChildEnteredTree += (child) => {
+            if (child is not IStage)
+                return;
             if (ActiveStage == null && !child.IsInGroup("Persistant")) {
                 ActiveStage = child;
-                if (string.IsNullOrEmpty(LastActiveStage))
-                    LastActiveStage = child.GetFileName();
+                if (string.IsNullOrEmpty(LastActiveStageUid)) {
+                    LastActiveStageName = child.Name;
+                    LastActiveStageUid = child.GetUidString();
+                }
                 child.TreeExiting += () => {
                     if (ActiveStage == child)
                         ActiveStage = null;
@@ -126,7 +132,8 @@ public partial class StageManager : NodeSingleton<StageManager>
                 UnloadingStages.Remove(child);
                 StageCount--;
                 if (ActiveStage == child) {
-                    LastActiveStage = child.GetFileName();
+                    LastActiveStageName = child.Name;
+                    LastActiveStageUid = child.GetUidString();
                     ActiveStageUnloaded.Invoke(child);
                 }
                 StageUnloaded.Invoke(child);
@@ -136,77 +143,43 @@ public partial class StageManager : NodeSingleton<StageManager>
         };
     }
 
-    public static async Task StartTransition(PackedScene packedScene) {
-        if (IsTransitioning) {
-            GDE.LogErr("Failed to start stage transition. A transition is already in process.");
-            return;
-        }
-        IsTransitioning = true;
-#if GDPOOL
-        PoolManager.Spawn(packedScene, Instance.GetTree().Root);
-#else
-        Instance.GetTree().Root.InstantiateChild(packedScene);
-#endif
-        TaskCompletionSource<Node> tcs = new();
-        void action(Node node) {
-            tcs.TrySetResult(node);
-            TransitionAfterFadeIn -= action;
-        }
-        TransitionAfterFadeIn += action;
-        await tcs.Task;
-        IsTransitioning = false;
-    }
-
-    public static async Task StartTransition(string stageName) => await StartTransition(Instance.defaultTransition);
-
     public static async Task<Node> UnloadStage(Node stage) {
         UnloadingStages.Add(stage);
         if (ActiveStage == stage)
             ActiveStageUnloading.Invoke(stage);
         StageUnloading.Invoke(stage);
         stage.QueueFree();
-        TaskCompletionSource<Node> tcs = new();
-        void action(Node node) {
+        TaskCompletionSource<Node> unloadTcs = new();
+        void awaitUnload(Node node) {
             if (node == stage) {
-                tcs.TrySetResult(node);
-                StageUnloaded -= action;
+                unloadTcs.TrySetResult(node);
+                StageUnloaded -= awaitUnload;
             }
         }
-        StageUnloaded += action;
-        return await tcs.Task;
+        StageUnloaded += awaitUnload;
+        return await unloadTcs.Task;
     }
 
     public static async Task<Node> UnloadAllStages(bool includePersistant = false) {
         for (int i = LoadedStages.Count - 1; i >= 0; i--)
             if (includePersistant || !LoadedStages[i].IsInGroup("Persistant"))
-                _ = UnloadStage(LoadedStages[i]);
-        TaskCompletionSource<Node> tcs = new();
-        void action(Node node) {
-            tcs.TrySetResult(node);
-            UnloadingComplete -= action;
+                await UnloadStage(LoadedStages[i]);
+        TaskCompletionSource<Node> unloadingCompleteTcs = new();
+        void awaitUnloadingComplete(Node node) {
+            unloadingCompleteTcs.TrySetResult(node);
+            UnloadingComplete -= awaitUnloadingComplete;
         }
-        UnloadingComplete += action;
-        return await tcs.Task;
+        UnloadingComplete += awaitUnloadingComplete;
+        return await unloadingCompleteTcs.Task;
     }
 
-    public static async Task<Node> LoadStage(PackedScene packedScene, bool awaitUnloadingCompletion = true) {
+    public static Node LoadStage(PackedScene packedScene) {
         LoadingStages.Add(packedScene.GetFileName());
-        if (awaitUnloadingCompletion && UnloadingStages.Count > 0) {
-            TaskCompletionSource tcs = new();
-            void action(Node _) {
-                tcs.TrySetResult();
-                UnloadingComplete -= action;
-            }
-            UnloadingComplete += action;
-            await tcs.Task;
-        }
-        return Instance.InstantiateChild(packedScene, false);
+        return StageRoot.InstantiateChild(packedScene, false);
     }
 
-    public static async Task<Node> LoadStage(string stageName, bool awaitUnloadingCompletion = true) {
-        var stageData = CachedStageData[stageName];
-        return await LoadStage(stageData.packedScene, awaitUnloadingCompletion);
-    }
+    public static Node LoadStage(string uid) => LoadStage(GDE.UidToResource<PackedScene>(uid));
+    public static Node LoadStage(long uid) => LoadStage(GDE.UidToResource<PackedScene>(uid));
 
     public static bool IsStageUnloading(Node stage) {
         return UnloadingStages.Contains(stage);
@@ -223,30 +196,30 @@ public partial class StageManager : NodeSingleton<StageManager>
         ActiveStageLoaded.Invoke(stage);
     }
 
-    public static void SetActiveStage(string stageName) {
-        foreach (var scene in LoadedStages) {
-            if (scene.Name == stageName) {
-                SetActiveStage(scene);
+    public static void SetActiveStage(string stageUid) {
+        foreach (var stage in LoadedStages) {
+            if (stage.GetUidString() == stageUid) {
+                SetActiveStage(stage);
                 return;
             }
         }
     }
 
-    public static Node GetLoadedStage(string stageName) {
-        foreach (var scene in LoadedStages) {
-            if (scene.Name == stageName)
-                return scene;
+    public static Node GetLoadedStage(string stageUid) {
+        foreach (var stage in LoadedStages) {
+            if (stage.GetUidString() == stageUid)
+                return stage;
         }
         return null;
     }
 
-    public static StageData GetStageData(string stageName) {
-        if (CachedStageData.TryGetValue(stageName, out StageData value))
+    public static StageData GetStageData(string stageUid) {
+        if (CachedStageData.TryGetValue(stageUid, out StageData value))
             return value;
         return default;
     }
 
-    public static bool StageExists(string stageName) {
-        return CachedStageData.ContainsKey(stageName);
+    public static bool StageExists(string stageUid) {
+        return CachedStageData.ContainsKey(stageUid);
     }
 }

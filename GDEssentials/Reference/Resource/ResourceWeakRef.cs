@@ -32,4 +32,6 @@ public partial class ResourceWeakRef : Resource
     public bool IsValid => GDE.IsUidValid(resourceUID);
 
     public T GetInstance<T>() where T : Resource => Instance as T;
+
+    public static implicit operator PackedScene(ResourceWeakRef weakRef) => GDE.UidToResource<PackedScene>(weakRef.resourceUID);
 }
