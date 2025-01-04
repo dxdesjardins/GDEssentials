@@ -51,8 +51,6 @@ public partial class StageManager : NodeSingleton<StageManager>
         public PackedScene packedScene = packedScene;
     }
 
-    public StageManager() => CacheStageData();
-
     private void CacheStageData() {
         foreach (var packedScene in GDE.GetResourcesInDirectory<PackedScene>(stageDirectory)) {
             string path = packedScene.GetPath();
@@ -98,6 +96,7 @@ public partial class StageManager : NodeSingleton<StageManager>
         if (initialized)
             return;
         initialized = true;
+        CacheStageData();
         if (this.IsAnAutoload())
             StageRoot = this.GetTree().Root;
         else

@@ -432,7 +432,7 @@ public static class ExtensionsNode
         return System.IO.Path.GetFileNameWithoutExtension(path);
     }
 
-    /// <summary> Returns false if node scene is not ready or if the game is quitting.
+    /// <summary> Returns false if node scene is not ready, the game is quitting. </summary>
     /// <para> This is useful to determine why a node would be exiting the tree. </para></summary>
     public static bool IsRemovedExplicitly(this Node node) {
         return !StageManager.IsQuittingGame && node.GetScene().IsNodeReady();
