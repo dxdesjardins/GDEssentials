@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Chomp.Essentials;
 
+[Tool]
 public partial class StageManager : NodeSingleton<StageManager>
 {
     [Export] private string stageDirectory = "res://Scene/Stage";
