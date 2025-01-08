@@ -62,6 +62,8 @@ public partial class StageManager : NodeSingleton<StageManager>
     }
 
     public override void _Notification(int what) {
+        if (Engine.IsEditorHint())
+            return;
         switch (what) {
             case (int)NotificationEnterTree:
                 Initialize();
