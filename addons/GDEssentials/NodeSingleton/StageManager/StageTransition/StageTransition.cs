@@ -7,7 +7,7 @@ namespace Chomp.Essentials;
 
 public partial class StageTransition : CanvasLayer
 {
-    [Export] private AnimationPlayer animationPlayer;
+    private AnimationPlayer animationPlayer;
     public static bool IsTransitioning { get; private set; }
 
     public static async Task StartTransition(PackedScene stageTransition) {
