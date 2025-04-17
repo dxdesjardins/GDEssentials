@@ -4,3 +4,5 @@
 
 [node name="StageManager" type="Node2D"]
 script = ExtResource("1_pvdd0")
+gameStartActions = []
+gameStartStages = []

@@ -8,7 +8,7 @@ namespace Chomp.Essentials;
 [Tool]
 public partial class StageManager : NodeSingleton<StageManager>
 {
-    [Export] private string stageDirectory = "res://Scene/Stage";
+    [Export] private string stageDirectory = "res://Assets/Scenes/Stages/";
     [Export] private GameAction[] gameStartActions;
     [Export] private PackedScene[] gameStartStages;
     private static bool initialized = false;
@@ -105,7 +105,7 @@ public partial class StageManager : NodeSingleton<StageManager>
         else
             StageRoot = this;
         StageRoot.ChildEnteredTree += (child) => {
-            if (child is not IStage)
+            if (child is not Stage)
                 return;
             if (ActiveStage == null && !child.IsInGroup("Persistant")) {
                 ActiveStage = child;

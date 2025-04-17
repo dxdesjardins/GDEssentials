@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Chomp.Essentials;
 
-public abstract partial class NodeSingleton<T> : Node2D where T : NodeSingleton<T>
+public abstract partial class NodeSingleton<T> : Node where T : NodeSingleton<T>
 {
     private static T instance;
     protected virtual bool SearchTreeForInstance { get; set; } = true;

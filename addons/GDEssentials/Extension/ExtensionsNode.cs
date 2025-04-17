@@ -354,7 +354,7 @@ public static class ExtensionsNode
 
     public static bool IsPartOfStage(this Node node) {
         do {
-            if (node is IStage)
+            if (node is Stage)
                 return true;
             node = node.GetParent();
         }
@@ -374,7 +374,7 @@ public static class ExtensionsNode
 
     public static bool IsPartOfSceneNotStage(this Node node) {
         do {
-            if (node is IStage)
+            if (node is Stage)
                 return false;
             if (!string.IsNullOrEmpty(node.SceneFilePath))
                 return true;
@@ -386,7 +386,7 @@ public static class ExtensionsNode
 
     public static Node GetStage(this Node node) {
         do {
-            if (node is IStage)
+            if (node is Stage)
                 return node;
             node = node.GetParent();
         }
@@ -457,5 +457,21 @@ public static class ExtensionsNode
 
     public static long GetUid(this Node node) {
         return GDE.PathToUid(node.SceneFilePath);
+    }
+
+    public static Control GetFocusOwner(this Node node) {
+        return node.GetViewport().GuiGetFocusOwner();
+    }
+
+    public static void SetDisabled(this Node node, bool state) {
+        node.SetProcess(!state);
+        foreach (Viewport viewport in node.GetComponentsInChildren<Viewport>())
+            viewport.GuiDisableInput = state;
+    }
+
+    public static Node GetGameObject(this Node node) {
+        if (node.GetChildCount() == 0)
+            return node;
+        return node.GetParent();
     }
 }
