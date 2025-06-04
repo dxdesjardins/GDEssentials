@@ -7,6 +7,17 @@ namespace Chomp.Essentials;
 
 public abstract partial class ResourceReference<TDerived, TResource> : Resource where TResource : Resource
 {
+    [ExportGroup("Resource Reference")]
+    [Export]
+    public bool UpdateResourceUid {
+        get { return false; }
+        set {
+            if (value == true) {
+                UpdateUid();
+            }
+        }
+    }
+
     private static TResource _Instance;
 
     public static TResource Instance {
@@ -20,35 +31,37 @@ public abstract partial class ResourceReference<TDerived, TResource> : Resource 
     public ResourceReference() {
         if (!Engine.IsEditorHint())
             return;
-        _ = GDE.CallDeferred(() => {
-            string uid = GetResourceUid();
-            if (!string.IsNullOrEmpty(uid)) {
-                long uidL = ResourceUid.TextToId(uid);
-                if (!ResourceUid.HasId(uidL)) {
-                    string newPath = this.ResourcePath;
-                    ResourceUid.RemoveId(this.GetUid());
-                    ResourceUid.AddId(uidL, newPath);
-                    GDE.ChangeResourceUid(newPath, uid);
-                    GDE.Log($"{typeof(TDerived).Name} UID({uid}) has been assigned to Path({newPath}).");
-                }
-                else if (GDE.UidToResource(uidL) is not TResource) {
-                    GDE.LogErr($"{typeof(TDerived).Name} UID({uid}) is not pointing to the correct resource.");
-                    string newPath = this.ResourcePath;
-                    ResourceUid.RemoveId(this.GetUid());
-                    ResourceUid.AddId(uidL, newPath);
-                    GDE.ChangeResourceUid(newPath, uid);
-                    GDE.Log($"{typeof(TDerived).Name} UID({uid}) has been assigned to Path({newPath}).");
-                }
+        _ = GDE.CallDeferred(UpdateUid);
+    }
+
+    public void UpdateUid() {
+        string uid = GetResourceUid();
+        if (!string.IsNullOrEmpty(uid)) {
+            long uidL = ResourceUid.TextToId(uid);
+            if (!ResourceUid.HasId(uidL)) {
+                string newPath = this.ResourcePath;
+                ResourceUid.RemoveId(this.GetUid());
+                ResourceUid.AddId(uidL, newPath);
+                GDE.ChangeResourceUid(newPath, uid);
+                GDE.Log($"{typeof(TDerived).Name} UID({uid}) has been assigned to Path({newPath}).");
             }
-            string path = GetResourcePath();
-            if (string.IsNullOrEmpty(path))
-                return;
-            Resource resource = GD.Load(path);
-            if (resource is null)
-                GDE.LogErr($"{typeof(TDerived).Name} is not pointing to a resource.");
-            else if (resource is not TResource)
-                GDE.LogErr($"{typeof(TDerived).Name} is not pointing to the correct resource.");
-        });
+            else if (GDE.UidToResource(uidL) is not TResource) {
+                GDE.LogErr($"{typeof(TDerived).Name} UID({uid}) is not pointing to the correct resource.");
+                string newPath = this.ResourcePath;
+                ResourceUid.RemoveId(this.GetUid());
+                ResourceUid.AddId(uidL, newPath);
+                GDE.ChangeResourceUid(newPath, uid);
+                GDE.Log($"{typeof(TDerived).Name} UID({uid}) has been assigned to Path({newPath}).");
+            }
+        }
+        string path = GetResourcePath();
+        if (string.IsNullOrEmpty(path))
+            return;
+        Resource resource = GD.Load(path);
+        if (resource is null)
+            GDE.LogErr($"{typeof(TDerived).Name} is not pointing to a resource.");
+        else if (resource is not TResource)
+            GDE.LogErr($"{typeof(TDerived).Name} is not pointing to the correct resource.");
     }
 
     private static void CreateOrLoadInstance() {
