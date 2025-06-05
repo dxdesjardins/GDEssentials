@@ -14,6 +14,7 @@ public abstract partial class ResourceReference<TDerived, TResource> : Resource 
         set {
             if (value == true) {
                 UpdateUid();
+                UpdateUid();
             }
         }
     }
